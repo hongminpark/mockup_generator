@@ -15,6 +15,7 @@ export default function App() {
                     <DynamicScene />
                 </div>
             </div>
+            <div className="w-px bg-black h-full" />
             <div className="w-1/2 h-full overflow-y-auto">
                 <div className="text-medium">
                     <div className="flex flex-row gap-4"></div>

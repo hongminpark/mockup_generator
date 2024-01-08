@@ -1,5 +1,5 @@
+import { animated as a, useSpring } from "@react-spring/three";
 import {
-    Box,
     Environment,
     OrbitControls,
     OrthographicCamera,
@@ -7,7 +7,6 @@ import {
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useRef, useState } from "react";
 import Loader from "./Loader";
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Scene() {
@@ -15,10 +14,14 @@ export default function Scene() {
     const ref = useRef();
     const [prediction, setPrediction] = useState(null);
     const [error, setError] = useState(null);
-    const [width, setWidth] = useState(1);
-    const [height, setHeight] = useState(2);
-    const [depth, setDepth] = useState(3);
-
+    const [dimensions, setDimensions] = useState({
+        width: 1,
+        height: 2,
+        depth: 3,
+    });
+    const springProps = useSpring({
+        scale: [dimensions.width, dimensions.height, dimensions.depth],
+    });
     const exportScene = () => {
         const canvas = document.querySelector("canvas");
         canvas.toBlob((blob) => {
@@ -79,17 +82,36 @@ export default function Scene() {
         }, "image/png");
     };
 
-    const handleDimensionChange = (dimensionSetter, event) => {
-        dimensionSetter(event.target.value);
+    const handleDimensionChange = (dimension) => (event) => {
+        setDimensions({ ...dimensions, [dimension]: event.target.value });
     };
 
-    const handleDimensionBlur = (dimensionSetter, event) => {
+    const handleDimensionBlur = (dimension) => (event) => {
         const value = parseFloat(event.target.value);
-        dimensionSetter(!isNaN(value) ? value.toString() : "0");
+        setDimensions({
+            ...dimensions,
+            [dimension]: !isNaN(value) ? value.toString() : "0",
+        });
     };
+
+    const renderDimensionInput = (dimension) => (
+        <div className="flex items-center">
+            <label className="mr-2 w-16">{dimension}</label>
+            <input
+                type="text"
+                value={dimensions[dimension]}
+                onChange={handleDimensionChange(dimension)}
+                onBlur={handleDimensionBlur(dimension)}
+                className="w-12 py-2 px-2 border-b box-border focus:border-black hover:border-black bg-white focus:outline-none text-center"
+                placeholder={
+                    dimension.charAt(0).toUpperCase() + dimension.slice(1)
+                }
+            />
+        </div>
+    );
 
     return (
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full gap-4">
             <div
                 ref={ref}
                 className="border box-border border-black"
@@ -119,39 +141,19 @@ export default function Scene() {
                         shadow-bias={-0.0001}
                     />
                     <Suspense fallback={<Loader />}>
-                        <Box args={[width, height, depth]} position={[0, 0, 0]}>
+                        <a.mesh scale={springProps.scale}>
+                            <boxGeometry args={[1, 1, 1]} />
                             <meshStandardMaterial color="white" />
-                        </Box>
+                        </a.mesh>
                     </Suspense>
                 </Canvas>
             </div>
-            <div className="flex flex-row gap-4">
-                <input
-                    type="text"
-                    value={width}
-                    onChange={(e) => handleDimensionChange(setWidth, e)}
-                    onBlur={(e) => handleDimensionBlur(setWidth, e)}
-                    className="w-16 my-4 py-2 px-4 border border-black box-border bg-white focus:outline-none"
-                    placeholder="Width"
-                />
-                <input
-                    type="text"
-                    value={height}
-                    onChange={(e) => handleDimensionChange(setHeight, e)}
-                    onBlur={(e) => handleDimensionBlur(setHeight, e)}
-                    className="w-16 my-4 py-2 px-4 border border-black box-border bg-white focus:outline-none"
-                    placeholder="Height"
-                />
-                <input
-                    type="text"
-                    value={depth}
-                    onChange={(e) => handleDimensionChange(setDepth, e)}
-                    onBlur={(e) => handleDimensionBlur(setDepth, e)}
-                    className="w-16 my-4 py-2 px-4 border border-black box-border bg-white focus:outline-none"
-                    placeholder="Depth"
-                />
+            <div className="flex flex-col gap-2">
+                {renderDimensionInput("width")}
+                {renderDimensionInput("height")}
+                {renderDimensionInput("depth")}
                 <button
-                    className="w-max m-4 py-2 px-4 border border-black box-border bg-white"
+                    className="w-max m-4 py-2 px-4 border border-black box-border bg-white hover:bg-black hover:text-white"
                     onClick={exportScene}
                 >
                     RENDER
