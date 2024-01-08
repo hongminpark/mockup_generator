@@ -9,3 +9,19 @@
         margin: 0;
     }
 }
+
+@keyframes move {
+    0%,
+    100% {
+        transform: translateX(100%);
+    }
+    50% {
+        transform: translateX(200%);
+    }
+}
+
+@layer utilities {
+    .animate-move {
+        animation: move 1.5s linear infinite;
+    }
+}

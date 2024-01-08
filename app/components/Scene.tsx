@@ -38,17 +38,9 @@ export default function Scene({ dimensions, canvasRef }) {
                         zoom={70}
                         onUpdate={(self) => self.lookAt(...cameraCenter)}
                     />
-                    <color attach="background" args={["white"]} />
+                    <color attach="background" args={["#ffffff"]} />
                     <Environment files="/keyshot.hdr" />
                     <OrbitControls target={cameraCenter} />
-                    <directionalLight
-                        castShadow
-                        position={[0, 6, 5]}
-                        intensity={2}
-                        shadow-mapSize-width={1024}
-                        shadow-mapSize-height={1024}
-                        shadow-bias={-0.0001}
-                    />
                     <Suspense fallback={<Loader />}>
                         <a.mesh scale={springProps.scale}>
                             <boxGeometry args={[1, 1, 1]} />

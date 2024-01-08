@@ -9,8 +9,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
             version:
-                "8a89b0ab59a050244a751b6475d91041a8582ba33692ae6fab65e0c51b700328",
-
+                "8ebda4c70b3ea2a2bf86e44595afb562a2cdf85525c620f1671a78113c9f325b",
             input: req.body,
         }),
     });

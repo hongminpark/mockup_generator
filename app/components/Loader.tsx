@@ -1,15 +1,7 @@
-import { Html, useProgress } from "@react-three/drei";
-
 export default function Loader() {
-    const { progress } = useProgress();
     return (
-        <Html
-            className="absolute top-0 left-0 bg-white !z-[10] w-screen h-screen flex items-center justify-center"
-            center
-        >
-            <div className="text-black absolute top-0 left-0 text-2xl h-screen w-screen bg-red flex items-center justify-center z-[10]">
-                {progress.toFixed(0)}%
-            </div>
-        </Html>
+        <div className="relative w-full h-1 overflow-hidden">
+            <div className="absolute left-0 bg-black w-24 h-full animate-move"></div>
+        </div>
     );
 }

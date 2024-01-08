@@ -5,7 +5,6 @@ const ImageComponent = ({ src, alt, isSelected, onSelected, zIndex }) => {
     const targetRef = useRef();
     const moveableRef = useRef();
     return (
-        // <div className={`relative w-full h-full`} onClick={onSelected}>
         <>
             <img
                 ref={targetRef}

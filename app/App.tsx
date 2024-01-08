@@ -2,10 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
+import Loader from "./components/Loader";
 
 const DynamicScene = dynamic(() => import("./components/Scene"), {
     ssr: false,
-    loading: () => <p>Loading...</p>,
+    loading: Loader,
 });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -50,15 +51,11 @@ export default function App() {
                         },
                         body: JSON.stringify({
                             image: base64data,
-                            prompt: "A white paper box, white background, 4k, uhd, mockup, photorealistic, ",
-                            scheduler: "K_EULER_ANCESTRAL",
-                            num_samples: 4,
-                            guidance_scale: 7.5,
-                            negative_prompt:
-                                "text, anime, cartoon, graphic, text, painting, crayon, graphite, abstract, glitch, deformed, mutated, ugly, disfigured",
-                            num_inference_steps: 20,
-                            adapter_conditioning_scale: 1,
-                            adapter_conditioning_factor: 1,
+                            prompt: "A white paper box, white background, 4k, uhd, mockup design, photorealistic, 3d render, minimal",
+                            model_type: "depth",
+                            num_samples: "4",
+                            n_prompt:
+                                "text, sticker, image, longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
                         }),
                     });
 
@@ -124,36 +121,61 @@ export default function App() {
     );
 
     return (
-        <div className="flex h-screen w-screen text-xs text-neutral-900">
-            <div className="w-1/2 h-full flex flex-col p-4">
-                <div className="flex flex-col gap-4">
-                    <DynamicScene
-                        dimensions={dimensions}
-                        canvasRef={canvasRef}
-                    />
-                    <div className="flex flex-col gap-2">
-                        {renderDimensionInput("width")}
-                        {renderDimensionInput("height")}
-                        {renderDimensionInput("depth")}
-                    </div>
-                    <button
-                        className="w-max py-2 px-4 border border-black box-border bg-white hover:bg-black hover:text-white"
-                        onClick={exportScene}
+        <div className="flex flex-col  h-screen w-screen text-xs text-neutral-900">
+            <nav className="flex items-center justify-between px-4 py-2 border-b border-black">
+                <div>
+                    <a
+                        href="#"
+                        className="text-6xl tracking-tighter font-medium"
                     >
-                        RENDER
-                    </button>
-                    <button
-                        className="w-max py-2 px-4 border border-black box-border bg-white hover:bg-black hover:text-white"
-                        onClick={downloadImage}
-                    >
-                        DOWNLOAD
-                    </button>
+                        GENERATE YOUR BOX MOCKUP
+                    </a>
                 </div>
-            </div>
-            <div className="w-px bg-black h-full" />
-            <div className="w-1/2 h-full overflow-y-auto">
-                <div className="p-4">
-                    <PredictionResults prediction={prediction} />
+                {/* <div>
+                    <a href="#" className="px-4 py-2 hover:bg-gray-700">
+                        Home
+                    </a>
+                    <a href="#" className="px-4 py-2 hover:bg-gray-700">
+                        About
+                    </a>
+                    <a href="#" className="px-4 py-2 hover:bg-gray-700">
+                        Contact
+                    </a>
+                </div> */}
+            </nav>
+            <div className="flex-grow overflow-auto">
+                <div className="flex h-full">
+                    <div className="w-1/2 h-full flex flex-col p-4">
+                        <div className="flex flex-col gap-4">
+                            <DynamicScene
+                                dimensions={dimensions}
+                                canvasRef={canvasRef}
+                            />
+                            <div className="flex flex-col gap-2">
+                                {renderDimensionInput("width")}
+                                {renderDimensionInput("height")}
+                                {renderDimensionInput("depth")}
+                            </div>
+                            <button
+                                className="w-max py-2 px-4 border border-black box-border bg-white hover:bg-black hover:text-white"
+                                onClick={exportScene}
+                            >
+                                RENDER
+                            </button>
+                            <button
+                                className="w-max py-2 px-4 border border-black box-border bg-white hover:bg-black hover:text-white"
+                                onClick={downloadImage}
+                            >
+                                DOWNLOAD
+                            </button>
+                        </div>
+                    </div>
+                    <div className="w-px bg-black h-full" />
+                    <div className="w-1/2 h-full overflow-y-auto">
+                        <div className="p-4">
+                            <PredictionResults prediction={prediction} />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -161,20 +183,22 @@ export default function App() {
 }
 
 const PredictionResults = ({ prediction }) => {
-    if (!prediction || prediction.status !== "succeeded") {
+    if (!prediction) {
         return (
             <div>No results to display or prediction is not successful.</div>
         );
+    } else if (prediction.status == "processing") {
+        return <div>{prediction.logs}</div>;
     }
 
     return (
         <div>
             <h2>Output</h2>
             <div className="flex flex-col gap-4">
-                {prediction.output.map((imageUrl, index) => (
+                {prediction.output?.map((imageUrl, index) => (
                     <div
                         key={index}
-                        // className={`${index === 0 ? "hidden" : ""}`}
+                        className={`${index === 0 ? "hidden" : ""}`}
                     >
                         <img
                             src={imageUrl}
