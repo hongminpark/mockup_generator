@@ -15,7 +15,6 @@ function BoxMesh({ dimensions }) {
         scale: [dimensions.width, dimensions.height, dimensions.depth],
     });
     const textures = useTexture([
-        "/pixodoxstudios_Digital_Display_--v_5.2_daa39fd6-4f60-4a9d-b5e2-6867a80d7aa5.png",
         "/1.jpg",
         "/2.jpg",
         "/3.jpg",
@@ -34,14 +33,14 @@ function BoxMesh({ dimensions }) {
         <a.mesh scale={springProps.scale}>
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial color="white" />
-            {materials.map((material, index) => (
+            {/* {materials.map((material, index) => (
                 // Apply each material to a different side of the box
                 <primitive
                     key={index}
                     attach={`material-${index}`}
                     object={material}
                 />
-            ))}
+            ))} */}
         </a.mesh>
     );
 }

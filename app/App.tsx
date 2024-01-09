@@ -189,6 +189,14 @@ const PredictionResults = ({ prediction }) => {
         );
     } else if (prediction.status == "processing") {
         return <div>{prediction.logs}</div>;
+    } else if (prediction.status == "starting") {
+        return (
+            <div>
+                {
+                    "It takes 20s usually, but it can be slower when first boot! Please do not leave page."
+                }
+            </div>
+        );
     }
 
     return (
